@@ -1,4 +1,7 @@
 .vs
+x64
+Matrix/x64
 *.sln
 *.filters
 *.user
+*.txt

@@ -22,8 +22,8 @@ public:
 	void printMatrix(FILE* &output) const;
 	
 	double determinant() const;
-	double minor(size_t const _line, size_t const _column) const;
-	double algebraicComplement(size_t const _line, size_t const _column) const;
+	double minor(size_t  _line, size_t  _column) const;
+	double algebraicComplement(size_t  _line, size_t  _column) const;
 
 	Matrix operator +(Matrix const &add) const;
 	Matrix operator -(Matrix const &rem) const;
