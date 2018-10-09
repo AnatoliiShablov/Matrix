@@ -1,24 +1,29 @@
 #include <cstdio> //Library for files(read from files, write to files)
 #include <chrono>
+#include <ctime>
 #include "Matrix.h" // Library for matrix (need to be in folder of project)
 
-const size_t NumberOfTests = 1;
+const size_t NumberOfTests = 10;
+const bool DispalayResult = false;
+
 int main()
 {
-	FILE* fileInput = std::fopen("testin.txt", "r"); //FILE* nameOfVariable = std::fopen("nameOfFile", "mode");
-	FILE* fileOutput = std::fopen("testout.txt", "w"); // r - readmode, w - writemode;
+	FILE* fileInput = std::fopen("StressIn.txt", "r"); //FILE* nameOfVariable = std::fopen("nameOfFile", "mode");
+	FILE* fileOutput = std::fopen("StressOut.txt", "w"); // r - readmode, w - writemode;
 
 	Matrix x;
-	std::chrono::time_point<std::chrono::system_clock> start, end;
-	start = std::chrono::system_clock::now();
+	auto t_start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < NumberOfTests; i++)
 	{
 		x.scanMatrix(fileInput);
-		std::fprintf(fileOutput,"%lf\n", x.determinant());
-		x.transpose().printMatrix(fileOutput);
+		//std::fprintf(fileOutput,"%lf\n", x.determinant());
+		if (DispalayResult)
+			x.transpose().printMatrix(fileOutput);
+		else
+			x.transpose();
 	}
-	end = std::chrono::system_clock::now();
-	std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-	std::fprintf(fileOutput, "\n\nDURATION - %f", std::chrono::duration<float>(duration));
+	auto t_end = std::chrono::high_resolution_clock::now();
+	double duration = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+	std::fprintf(fileOutput, "\n\nDURATION - %f", duration);
 	return 0;
 }

@@ -67,11 +67,14 @@ void Matrix::scanMatrix(FILE* &input)
 
 void Matrix::printMatrix(FILE* &output) const
 {
+	std::fprintf(output, "%d %d\n", this->height, this->width);
 	for (size_t it = 0; it < (this->height)*(this->width); it++)
 	{
 		std::fprintf(output, "%lf ", this->matrix[it]);
-		if ((it) && !(it%width))std::fprintf(output, "\n");
+		if (!((it + 1) % width))
+			std::fprintf(output, "\n");
 	}
+	std::fprintf(output, "\n");
 }
 
 double Matrix::determinant() const
@@ -285,7 +288,7 @@ double Matrix::determinant() const
 		{
 			for (size_t column = 0; column < result.width; column++)
 			{
-				result.matrix[line*this->width + column] = this->matrix[column*this->height + line];
+				result.matrix[line*this->height + column] = this->matrix[column*this->width + line];
 			}
 		}
 		return result;

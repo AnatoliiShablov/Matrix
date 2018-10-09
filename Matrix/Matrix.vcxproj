@@ -124,8 +124,8 @@
     <ClInclude Include="Matrix.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="testin.txt" />
-    <Text Include="testout.txt" />
+    <Text Include="StressIn.txt" />
+    <Text Include="StressOut.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
