@@ -4,4 +4,4 @@ Matrix/x64
 *.sln
 *.filters
 *.user
-*.txt
+*.idea
