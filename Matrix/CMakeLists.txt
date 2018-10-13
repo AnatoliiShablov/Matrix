@@ -1,6 +1,10 @@
-add_library(libmatrix INTERFACE)
-target_sources(libmatrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Matrix.h ${CMAKE_CURRENT_SOURCE_DIR}/Common.h)
-target_include_directories(libmatrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+project(libmatrix)
 
-add_executable(matrix_test Source.cpp)
-target_link_libraries(matrix_test PUBLIC libmatrix)
+set(HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/common.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/matrix/matrix.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/matrix/span.h)
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_sources(${PROJECT_NAME} INTERFACE ${HEADERS})
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJECT_NAME} INTERFACE -DTCB_SPAN_NAMESPACE_NAME=std -DTCB_SPAN_THROW_ON_CONTRACT_VIOLATION)

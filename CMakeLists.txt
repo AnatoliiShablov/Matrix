@@ -4,3 +4,4 @@ set(CMAKE_CXX_STANDARD 17)
 project(matrix)
 
 add_subdirectory(Matrix)
+add_subdirectory(Tests)
