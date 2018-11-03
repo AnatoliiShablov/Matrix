@@ -7,7 +7,8 @@
 #include <limits>
 #include <vector>
 
-#include "Common.h"
+#include "span.h"
+#include "../../common.h"
 
 template<typename T>
 class Matrix {
@@ -15,10 +16,7 @@ public:
 	constexpr explicit Matrix() = default;
 
 	constexpr explicit Matrix(size_t width, size_t height) : width_(width), height_(height),
-	                                                         data_(width * height, {}) {
-	}
-
-	constexpr explicit Matrix(std::vector<std::vector<double>> const& getted) { /// под вопросом, нужно ли
+	                                                         data_(width * height, T{}) {
 	}
 
 	constexpr static Matrix indentity(size_t size) {
@@ -27,6 +25,14 @@ public:
 			*it = unit<T>();
 		}
 		return indentity_;
+	}
+
+	constexpr size_t height() const {
+		return height_;
+	}
+
+	constexpr size_t width() const {
+		return width_;
 	}
 
 	constexpr Matrix& inverse() noexcept {
@@ -40,6 +46,15 @@ public:
 	constexpr T determinant() const {
 		return {};
 	}
+
+	constexpr std::span<T> operator[](size_t index) {
+		if (index >= height_) {
+			return {};
+		}
+
+		auto beginRow = std::begin(data_) + (width_ * index);
+		return {&*beginRow, &*(beginRow + width_)};
+	};
 
 	constexpr Matrix& operator+=(Matrix const& rhs) noexcept {
 		std::transform(std::begin(data_), std::end(data_), std::cbegin(rhs.data_), std::cend(rhs.data_),
@@ -63,10 +78,28 @@ public:
 		return std::move(rhs += lhs);
 	}
 
-//	friend Matrix operator-(Matrix const& lhs, Matrix const& rhs);
-//	friend Matrix operator-(Matrix const& lhs, Matrix&& rhs);
-//	friend Matrix operator-(Matrix&& lhs, Matrix const& rhs);
-//	friend Matrix operator-(Matrix&& lhs, Matrix&& rhs);
+
+	constexpr Matrix& operator-=(Matrix const& rhs) noexcept {
+		std::transform(std::begin(data_), std::end(data_), std::cbegin(rhs.data_), std::cend(rhs.data_),
+		               std::begin(data_), [](auto& lhs_value, auto& rhs_value) { return lhs_value -= rhs_value; });
+		return *this;
+	}
+
+	friend constexpr Matrix operator-(Matrix const& lhs, Matrix const& rhs) {
+		return Matrix(lhs) -= rhs;
+	}
+
+	friend constexpr Matrix operator-(Matrix const& lhs, Matrix&& rhs) noexcept {
+		return std::move(rhs -= lhs);
+	}
+
+	friend constexpr Matrix operator-(Matrix&& lhs, Matrix const& rhs) noexcept {
+		return std::move(lhs -= rhs);
+	}
+
+	friend constexpr Matrix operator-(Matrix&& lhs, Matrix&& rhs) noexcept {
+		return std::move(rhs -= lhs);
+	}
 //
 //	friend Matrix operator/(Matrix const& lhs, Matrix const& rhs);
 //	friend Matrix operator/(Matrix const& lhs, Matrix&& rhs);
@@ -104,15 +137,39 @@ public:
 		return std::move(lhs -= rhs);
 	}
 
-//	Matrix& operator/=(T const& rhs);
-//	friend Matrix operator/(Matrix const& lhs, T const& rhs);
-//	friend Matrix operator/(Matrix&& lhs, T const& rhs);
-//
-//	Matrix& operator*=(T const& rhs);
-//	friend Matrix operator*(Matrix const& lhs, T const& rhs);
-//	friend Matrix operator*(Matrix&& lhs, T const& rhs);
-//	friend Matrix operator*(T const& rhs, Matrix const& lhs);
-//	friend Matrix operator*(T const& rhs, Matrix&& lhs);
+	Matrix& operator/=(T const& rhs) {
+		std::transform(std::begin(data_), std::end(data_), std::begin(data_), [rhs](auto& value) { value /= rhs; });
+		return *this;
+	}
+
+	friend Matrix operator/(Matrix const& lhs, T const& rhs) {
+		return Matrix(lhs) /= rhs;
+	}
+
+	friend Matrix operator/(Matrix&& lhs, T const& rhs) {
+		return std::move(lhs /= rhs);
+	}
+
+	Matrix& operator*=(T const& rhs) {
+		std::transform(std::begin(data_), std::end(data_), std::begin(data_), [rhs](auto& value) { value *= rhs; });
+		return *this;
+	}
+
+	friend Matrix operator*(Matrix const& lhs, T const& rhs) {
+		return Matrix(lhs) *= rhs;
+	}
+
+	friend Matrix operator*(Matrix&& lhs, T const& rhs) {
+		return std::move(lhs *= rhs);
+	}
+
+	friend Matrix operator*(T const& lhs, Matrix const& rhs) {
+		return Matrix(rhs) *= lhs;
+	}
+
+	friend Matrix operator*(T const& lhs, Matrix&& rhs) {
+		return std::move(rhs *= lhs);
+	}
 
 	constexpr bool operator==(Matrix const& rhs) const noexcept {
 		return width_ == rhs.width_ && data_ == rhs.data_; /// next for optimization you may use memcmp for simple types
